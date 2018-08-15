@@ -1,0 +1,40 @@
+version: '3.3'
+
+services:
+  app:
+    image: gaiama-api-users:latest
+    container_name: gaiama-api-users
+    build: .
+    ports:
+      - 13089:3000
+      - 13088:3001
+    environment:
+      GAIAMA_SERVICE_NAME: gaiama-api-users
+      MONGODB_URI: mongodb://root:example@gaiamadb:27017/gaiama?authSource=admin
+    depends_on:
+      - db
+    volumes:
+      - ./dist:/app/dist
+    networks:
+      - gaiamanet
+
+  db:
+    image: mongo:4.0
+    container_name: gaiama-db
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017
+    volumes:
+      - ./db:/data/db
+    restart: unless-stopped
+    networks:
+      gaiamanet:
+        aliases:
+          - gaiamadb
+
+networks:
+  gaiamanet:
+    driver: bridge
