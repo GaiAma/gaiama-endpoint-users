@@ -1,5 +1,6 @@
 {
   "release": {
+    "npmPublish": false,
     "verifyConditions": [
       "@semantic-release/changelog",
       "@semantic-release/git",
