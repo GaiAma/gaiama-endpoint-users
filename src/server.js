@@ -12,17 +12,9 @@ import Router from 'koa-router'
 // import koaJwt from 'koa-jwt'
 import cors from '@koa/cors'
 
-import { validateEndpointDonation } from '@/validators'
-import {
-  endpointStripe,
-  endpointStripeExecute,
-  endpointStripeWebhook,
-} from './endpoints/stripe'
-import {
-  endpointPaypal,
-  endpointPaypalExecutePayment,
-  endpointPaypalExecuteAgreement,
-} from './endpoints/paypal'
+import { User } from '@/db/models'
+
+// import { validateEndpointDonation } from '@/validators'
 
 const port = process.env.PORT || 3000
 const { ENDPOINT_CORS_ORIGIN } = process.env
@@ -63,47 +55,45 @@ app.use(async (ctx, next) => {
     ctx.status = err.status || 500
     ctx.body = { msg: `error` }
     ctx.app.emit(`error`, err, ctx)
-    debug(err.message)
+    console.log(err.message)
   }
 })
 
 // Custom 401 handling if you don't want to expose koa-jwt errors to users
-// app.use(function(ctx, next) {
-//   return next().catch(
-//     err => new Boom.unauthorized(`invalid token`)
-//     // if (401 == err.status) {
-//     //   ctx.status = 401
-//     //   ctx.body = `Protected resource, use Authorization header to get access\n`
-//     // } else {
-//     //   throw err
-//     // }
-//   )
-// })
+app.use(function(ctx, next) {
+  return next().catch(
+    err => new Boom.unauthorized(`invalid token`)
+    // if (401 == err.status) {
+    //   ctx.status = 401
+    //   ctx.body = `Protected resource, use Authorization header to get access\n`
+    // } else {
+    //   throw err
+    // }
+  )
+})
 
 // Document error and 404 handling
-// app.use(async (ctx, next) => {
-//   try {
-//     await next();
-//   } catch (err) {
-//     if (err) {
-//       ctx.status = err.status;
-//       ctx.body = Boom.wrap(err, err.status, err.message).output.payload; // can be replaced with `ctx.body = err.message`
-//       app.emit('error', err, ctx);
-//       return;
-//     }
-//     // 404 handler
-//     ctx.status = 404;
-//     ctx.body = Boom.notFound().output.payload; // can be replaced with `ctx.body = "Not Found"`
-//   }
-// })
+app.use(async (ctx, next) => {
+  try {
+    await next()
+  } catch (err) {
+    if (err) {
+      ctx.status = err.status
+      ctx.body = Boom.wrap(err, err.status, err.message).output.payload // can be replaced with `ctx.body = err.message`
+      app.emit(`error`, err, ctx)
+      return
+    }
+    // 404 handler
+    ctx.status = 404
+    ctx.body = Boom.notFound().output.payload // can be replaced with `ctx.body = "Not Found"`
+  }
+})
 
 app.use(
   cors({
     origin: isProduction ? ENDPOINT_CORS_ORIGIN : `*`,
   })
 )
-
-router.post(`webhooks/stripe`, endpointStripeWebhook)
 
 // app.use(
 //   new Csrf({
@@ -122,12 +112,12 @@ router.post(`webhooks/stripe`, endpointStripeWebhook)
 //   })
 // )
 
-app.use(async (ctx, next) => {
-  const start = Date.now()
-  await next()
-  const ms = Date.now() - start
-  ctx.set(`X-Response-Time`, `${ms}ms`)
-})
+// app.use(async (ctx, next) => {
+//   const start = Date.now()
+//   await next()
+//   const ms = Date.now() - start
+//   ctx.set(`X-Response-Time`, `${ms}ms`)
+// })
 
 // https://github.com/koajs/ratelimit
 // app.use(
@@ -164,47 +154,12 @@ app.use(async (ctx, next) => {
 
 app.use(bodyParser())
 
-// router.post(`/donate/paypal`, endpointPaypal)
-// router.post(`/donate/stripe`, endpointStripe)
-
-/* maybe switch to single endpoint to orchestrate providers
-for single point of request validation etc */
-router.post(`/donate/`, async (ctx, next) => {
-  const validationResult = validateEndpointDonation(ctx.request.body)
-  if (validationResult.error) {
-    ctx.status = 406
-    ctx.body = {
-      status: `error`,
-      details: validationResult.error.details,
-    }
-    return false
-  }
-
-  const { paymentMethod } = ctx.request.body.form
-
-  try {
-    switch (paymentMethod) {
-      case `stripe`:
-        await endpointStripe(ctx, next)
-        break
-      case `paypal`:
-        await endpointPaypal(ctx, next)
-        break
-    }
-    return {
-      status: `unknown`,
-    }
-  } catch (error) {
-    return {
-      status: `error`,
-      message: error.message,
-    }
-  }
+router.post(`/user`, async (ctx, next) => {
+  await User.create(ctx.request.body)
+  ctx.body = `ok`
+  // require(`fs`).writeFileSync(`./TEST.json`, JSON.stringify(ctx, null, 2))
+  return next()
 })
-
-router.post(`/donate/stripe/payments/execute`, endpointStripeExecute)
-router.post(`/donate/paypal/payments/execute`, endpointPaypalExecutePayment)
-router.post(`/donate/paypal/agreements/execute`, endpointPaypalExecuteAgreement)
 
 app.use(router.routes())
 app.use(
@@ -216,6 +171,6 @@ app.use(
 )
 
 export const server = _port =>
-  app.listen(port).on(`error`, err => {
+  app.listen(_port || port).on(`error`, err => {
     console.error(err)
   })

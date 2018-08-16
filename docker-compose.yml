@@ -10,7 +10,7 @@ services:
       - 13088:3001
     environment:
       GAIAMA_SERVICE_NAME: gaiama-api-users
-      MONGODB_URI: mongodb://root:example@gaiamadb:27017/gaiama?authSource=admin
+      MONGODB_URI: mongodb://root:example@gaiamadbuser:27017/gaiama?authSource=admin
     depends_on:
       - db
     volumes:
@@ -20,7 +20,7 @@ services:
 
   db:
     image: mongo:4.0
-    container_name: gaiama-db
+    container_name: gaiama-db-user
     environment:
       MONGODB_REPLICA_SET_MODE: primary
       MONGO_INITDB_ROOT_USERNAME: root
@@ -33,7 +33,7 @@ services:
     networks:
       gaiamanet:
         aliases:
-          - gaiamadb
+          - gaiamadbuser
 
 networks:
   gaiamanet:

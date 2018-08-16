@@ -41,6 +41,7 @@
     "koa-router": "^7.4.0",
     "koa-session": "^5.8.2",
     "koa-userauth": "^2.0.1",
+    "mockgoose": "^7.3.5",
     "mongoose": "^5.2.5",
     "mongoose-bcrypt": "https://github.com/GaiAma/mongoose-bcrypt",
     "pino": "^4.17.3",
@@ -64,6 +65,7 @@
     "babel-plugin-module-resolver": "^3.1.1",
     "codecov": "^3.0.4",
     "commitizen": "^2.10.1",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.18.1",
     "eslint-config-google": "^0.9.1",
     "eslint-config-prettier": "^2.9.0",
@@ -80,5 +82,10 @@
     "semantic-release": "^15.9.8",
     "supertest": "^3.1.0",
     "test-listen": "^1.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
