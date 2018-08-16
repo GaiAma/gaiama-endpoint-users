@@ -1,12 +1,12 @@
 {
   "release": {
-    "npmPublish": false,
     "verifyConditions": [
-      {
-        "path": "@semantic-release/github"
-      }
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
     ],
     "prepare": [
+      "@semantic-release/changelog",
       {
         "path": "@semantic-release/git",
         "assets": ["package.json", "dist/**/*.{js,css}", "docs"],
@@ -14,11 +14,7 @@
       }
     ],
     "publish": [
-      "path": "@semantic-release/github",
-      {
-        "path": "@semantic-release/npm",
-        "npmPublish": false,
-      }
+      "path": "@semantic-release/github"
     ]
   }
 }
