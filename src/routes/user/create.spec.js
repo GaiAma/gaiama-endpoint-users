@@ -6,9 +6,9 @@ import { server } from '@/server'
 import { User } from '@/db/models'
 import { Mockgoose } from 'mockgoose'
 
-const mockgoose = new Mockgoose(mongoose)
-// jest.setTimeout(30000)
+jest.setTimeout(30000)
 
+const mockgoose = new Mockgoose(mongoose)
 const openportFind = promisify(openport.find)
 const state = {}
 const testUser = {
