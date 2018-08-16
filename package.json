@@ -14,7 +14,6 @@
     "docker:run": "docker run --env-file ../.env gaiama-endpoint-users",
     "test": "yarn jest",
     "coverage": "yarn codecov",
-    "precommit": "yarn test",
     "commit": "yarn git-cz",
     "release": "yarn semantic-release"
   },
