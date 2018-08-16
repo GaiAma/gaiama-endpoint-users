@@ -21,7 +21,7 @@ beforeAll(async () => {
     mockgoose.prepareStorage(),
   ])
 
-  app = server(port)
+  app = await server(port)
 
   request = axios.create({
     baseURL: `http://localhost:${port}`,
