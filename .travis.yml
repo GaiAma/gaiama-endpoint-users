@@ -2,8 +2,10 @@ language: node_js
 node_js:
   - 'lts/*'
 cache: yarn
-script: yarn test
-after_script:
+before_script:
+  - yarn build
+  - yarn test
+script:
   - yarn coverage
   - yarn release
 notifications:
