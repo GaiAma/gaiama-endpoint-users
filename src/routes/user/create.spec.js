@@ -49,7 +49,9 @@ afterEach(() => mockgoose.helper.reset())
 
 afterAll(async function() {
   const { childProcess } = mockgoose.mongodHelper.mongoBin
-  childProcess.kill()
+  if (childProcess) {
+    childProcess.kill()
+  }
   await Promise.all([app.close(), mongoose.disconnect()])
 })
 
