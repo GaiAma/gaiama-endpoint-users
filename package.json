@@ -12,7 +12,11 @@
     "watch": "yarn build --watch",
     "docker:build": "yarn build && docker build -t gaiama-endpoint-users .",
     "docker:run": "docker run --env-file ../.env gaiama-endpoint-users",
-    "test": "jest && codecov"
+    "test": "yarn jest",
+    "coverage": "yarn codecov",
+    "precommit": "yarn test",
+    "commit": "yarn git-cz",
+    "release": "yarn semantic-release"
   },
   "dependencies": {
     "@koa/cors": "2",
@@ -59,6 +63,7 @@
     "babel-jest": "^23.4.2",
     "babel-plugin-module-resolver": "^3.1.1",
     "codecov": "^3.0.4",
+    "commitizen": "^2.10.1",
     "eslint": "^4.18.1",
     "eslint-config-google": "^0.9.1",
     "eslint-config-prettier": "^2.9.0",
@@ -72,6 +77,7 @@
     "nodemon": "^1.18.3",
     "openport": "^0.0.5",
     "prettier": "^1.11.1",
+    "semantic-release": "^15.9.8",
     "supertest": "^3.1.0",
     "test-listen": "^1.1.0"
   }
