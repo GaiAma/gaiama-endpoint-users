@@ -12,10 +12,10 @@
     "watch": "yarn build --watch",
     "docker:build": "yarn build && docker build -t gaiama-endpoint-users .",
     "docker:run": "docker run --env-file ../.env gaiama-endpoint-users",
-    "test": "yarn jest",
-    "coverage": "yarn codecov",
-    "commit": "yarn git-cz",
-    "release": "yarn semantic-release"
+    "test": "jest",
+    "coverage": "codecov",
+    "commit": "git-cz",
+    "release": "semantic-release"
   },
   "dependencies": {
     "@koa/cors": "2",
